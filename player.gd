@@ -1,4 +1,5 @@
 extends Area2D
+signal hit
 
 @export var speed = 400 #How fast the player will move (pixels/sec)
 var screen_size #size of game window
@@ -42,6 +43,14 @@ func _process(delta):
 		$AnimatedSprite2D.animation = "up"
 		#down is positive so logic is flipped
 		$AnimatedSprite2D.flip_v = velocity.y > 0
-		
-		
-		
+
+func _on_body_entered(body):
+	hide() #disappear after being hit
+	hit.emit()
+	#must be defered to prevent error caused if it happens in the middel of the engine's collsion
+	$CollisionShape2D.set_deferred("disabled", true) #disable to prevent more than one "hit" signal
+
+func start(pos):
+	position = pos
+	show()
+	$CollisionShape2D.disabled = false
